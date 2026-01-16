@@ -14,8 +14,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',      // Ajouté
-        'is_active', // Ajouté
+        'role',      // Indispensable pour vos Middlewares
+        'is_active', // Indispensable pour la validation admin
     ];
 
     protected $hidden = [
@@ -31,6 +31,7 @@ class User extends Authenticatable
         ];
     }
 
+    // Cette méthode est requise par le DashboardController
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
