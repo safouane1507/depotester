@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 1200px; margin: 0 auto;">
-    <h1 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px;">Espace Responsable Technique</h1>
+<div style="max-width: 1200px; margin: 0 auto; padding-bottom: 50px;">
+    <h1 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 30px;">Espace Responsable Technique</h1>
 
     @if(session('success'))
         <div style="background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9;">
@@ -37,21 +37,17 @@
                                 <b>CPU:</b> {{ $req->cpu }} | <b>RAM:</b> {{ $req->ram }}<br>
                                 <b>Disk:</b> {{ $req->storage }}
                             </td>
-                            <td style="padding: 12px; font-style: italic; font-size: 0.85rem;">"{{ $req->justification }}"</td>
+                            <td style="padding: 12px; font-style: italic; font-size: 0.85rem;">"{{ Str::limit($req->justification, 30) }}"</td>
                             <td style="padding: 12px; text-align: center;">
                                 <div style="display: flex; gap: 8px; justify-content: center;">
                                     <form action="{{ route('manager.custom.approve', $req->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" style="background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-                                            Approuver
-                                        </button>
+                                        <button type="submit" style="background: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✔ Accepter</button>
                                     </form>
 
                                     <form action="{{ route('manager.custom.reject', $req->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment rejeter cette demande ?');">
                                         @csrf
-                                        <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
-                                            Rejeter
-                                        </button>
+                                        <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✘ Rejeter</button>
                                     </form>
                                 </div>
                             </td>
@@ -68,7 +64,7 @@
             <p style="color: #777; font-style: italic;">Aucune réservation à traiter.</p>
         @else
             <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                <thead style="background: #f8f9fa;">
+                <thead style="background: var(--bg-background);">
                     <tr>
                         <th style="padding: 12px; text-align: left;">Utilisateur</th>
                         <th style="padding: 12px; text-align: left;">Ressource</th>
@@ -78,7 +74,7 @@
                 </thead>
                 <tbody>
                     @foreach($pendingReservations as $reservation)
-                        <tr style="border-bottom: 1px solid #eee;">
+                        <tr style="border-bottom: 1px solid var(--border);">
                             <td style="padding: 12px;"><strong>{{ $reservation->user->name }}</strong></td>
                             <td style="padding: 12px; color: var(--primary);">{{ $reservation->resource->label }}</td>
                             <td style="padding: 12px; font-size: 0.85rem;">
@@ -86,11 +82,19 @@
                                 au {{ \Carbon\Carbon::parse($reservation->end_date)->format('d/m H:i') }}
                             </td>
                             <td style="padding: 12px; text-align: center;">
-                                <form action="{{ route('manager.reservations.handle', $reservation->id) }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="action" value="approve">
-                                    <button type="submit" style="background: var(--success); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">✔</button>
-                                </form>
+                                <div style="display: flex; gap: 8px; justify-content: center;">
+                                    <form action="{{ route('manager.reservations.handle', $reservation->id) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" style="background: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✔ Accepter</button>
+                                    </form>
+
+                                    <form action="{{ route('manager.reservations.handle', $reservation->id) }}" method="POST" onsubmit="return confirm('Refuser cette demande ?');">
+                                        @csrf
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✘ Refuser</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -102,16 +106,17 @@
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2>🛠 Gestion du Catalogue ({{ $managedResources->count() }})</h2>
-            <a href="{{ route('manager.resources.create') }}" style="background: var(--primary); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">+ Ajouter</a>
+            <a href="{{ route('manager.resources.create') }}" style="background: var(--primary); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: bold;">+ Ajouter</a>
         </div>
         <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px;">
             @foreach($managedResources as $resource)
                 <div class="card" style="padding: 15px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface);">
                     <div style="display: flex; justify-content: space-between;">
                         <span style="font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase;">{{ $resource->category }}</span>
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {{ $resource->status == 'available' ? '#00b894' : '#d63031' }};"></div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: {{ $resource->status == 'available' ? '#00b894' : ($resource->status == 'maintenance' ? 'orange' : '#d63031') }};"></div>
                     </div>
                     <h3 style="font-size: 1.1rem; margin: 10px 0;">{{ $resource->label }}</h3>
+                    
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
                         <a href="{{ route('manager.resources.edit', $resource->id) }}" style="flex: 1; text-align: center; font-size: 0.8rem; padding: 6px; background: var(--bg-background); border: 1px solid var(--border); border-radius: 6px; text-decoration: none; color: var(--text-primary); font-weight: 600;">⚙ Gérer</a>
                         

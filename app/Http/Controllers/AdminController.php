@@ -11,15 +11,15 @@ class AdminController extends Controller
 {
     // --- GESTION DES UTILISATEURS ---
 
-    public function activateUser(Request $request, $id)
-    {
-        // Ancienne méthode, remplacée par toggleUserStatus pour plus de simplicité
-        $user = User::findOrFail($id);
-        $user->is_active = true;
-        $user->save();
-        return back()->with('success', 'Compte activé.');
-    }
-
+    /*public function activateUser(Request $request, $id)
+    *{
+    *    // Ancienne méthode, remplacée par toggleUserStatus pour plus de simplicité
+    *    $user = User::findOrFail($id);
+    *    $user->is_active = true;
+    *    $user->save();
+    *    return back()->with('success', 'Compte activé.');
+    *}
+    */
     // AJOUT : Fonction pour activer/désactiver (Switch)
     public function toggleUserStatus($id)
     {
@@ -46,7 +46,7 @@ class AdminController extends Controller
             'label' => 'required|string|max:255',
             'category' => 'required|string', // Assurez-vous que les catégories correspondent au menu (ex: "Machine Virtuelle")
             'location' => 'required|string',
-            'description' => 'nullable|string',
+            //'description' => 'nullable|string',
             'manager_id' => 'required|exists:users,id', // On valide que le manager existe
         ]);
 
@@ -59,7 +59,8 @@ class AdminController extends Controller
             'manager_id' => $request->manager_id, // L'admin devient le gestionnaire par défaut
         ]);
 
-        return redirect()->route('admin.dashboard')->with('success', 'Ressource ajoutée au catalogue.');
+        //return redirect()->route('admin.dashboard')->with('success', 'Ressource ajoutée au catalogue.');
+        return back()->with('success', 'Pack créé et assigné au manager.');
     }
 
     public function updateUserRole(Request $request, $id)

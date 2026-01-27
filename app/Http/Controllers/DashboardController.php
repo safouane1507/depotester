@@ -11,17 +11,15 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
-    // --- PARTIE PUBLIQUE AVEC FILTRAGE ---
+    // --- PARTIE PUBLIQUE ---
     public function guestIndex(Request $request) {
-    $resources = collect();
-
-    if ($request->has('cat')) {
-        // On retire la contrainte stricte sur le manager_id pour que les packs Admin s'affichent aussi
-        $resources = Resource::where('status', 'available')
-            ->where('category', $request->cat)
-            ->get();
-    }
-    return view('guest.index', compact('resources'));
+        $resources = collect();
+        if ($request->has('cat')) {
+            $resources = Resource::where('status', 'available')
+                ->where('category', $request->cat)
+                ->get();
+        }
+        return view('guest.index', compact('resources'));
     }
 
     public function resourceDetail($id) {
@@ -39,16 +37,12 @@ class DashboardController extends Controller
         if (!$user) { return redirect()->route('login'); }
         
         $myReservations = $user->reservations()->latest()->get();
-        
-        $myCustomRequests = DB::table('custom_requests')
-            ->where('user_id', $user->id)
-            ->latest()
-            ->get();
+        $myCustomRequests = DB::table('custom_requests')->where('user_id', $user->id)->latest()->get();
 
         return view('user.dashboard', compact('myReservations', 'myCustomRequests'));
     }
 
-    // --- PARTIE RESPONSABLE ---
+    // --- PARTIE MANAGER ---
     public function managerDashboard() {
         $managerId = Auth::id();
         $managedResources = Resource::where('manager_id', $managerId)->get();
@@ -69,59 +63,52 @@ class DashboardController extends Controller
         return view('manager.dashboard', compact('managedResources', 'pendingReservations', 'customRequests'));
     }
 
-    // --- PARTIE ADMINISTRATEUR ---
-   public function adminDashboard() {
+    // --- PARTIE ADMIN (CORRIGÉE ET RESTAURÉE) ---
+    public function adminDashboard() {
+        // 1. RESTAURATION DES STATISTIQUES
         $stats = [
             'users_count' => User::count(),
             'resources_count' => Resource::count(),
             'pending_reservations' => Reservation::where('status', 'pending')->count(),
         ];
 
-        // Utilisateurs en attente ou inactifs
-        $pendingUsers = User::where('is_active', false)->get();
-        // Tous les utilisateurs sauf admin
-        $allUsers = User::where('role', '!=', 'admin')->get();
-        // Liste des managers pour info
+        // 2. Gestion des utilisateurs (Tout le monde sauf soi-même)
+        $allUsers = User::where('id', '!=', Auth::id())->get();
+        
+        // 3. Liste des managers (pour l'ajout de ressource)
         $managers = User::where('role', 'manager')->orWhere('role', 'admin')->get();
         
-        // AJOUT : Récupérer les demandes sur mesure pour l'admin
-        $customRequests = DB::table('custom_requests')
-            ->join('users', 'custom_requests.user_id', '=', 'users.id')
-            ->select('custom_requests.*', 'users.name', 'users.email')
-            ->where('custom_requests.status', 'pending')
-            ->get();
-            
-
-            // 2. Récupérer TOUTES les réservations en attente
+        // 4. RESTAURATION DES RÉSERVATIONS EN ATTENTE
         $pendingReservations = Reservation::where('status', 'pending')
             ->with(['user', 'resource'])
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'pendingUsers', 'allUsers', 'managers', 'customRequests', 'pendingReservations'));
+        // 5. Demandes sur mesure
+        $customRequests = DB::table('custom_requests')
+            ->join('users', 'custom_requests.user_id', '=', 'users.id')
+            ->select('custom_requests.*', 'users.name', 'users.email')
+            ->where('custom_requests.status', 'pending')
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'allUsers', 'managers', 'pendingReservations', 'customRequests'));
     }
 
-    // --- GESTION DES RESSOURCES ---
+    // --- GESTION RESSOURCES (Admin & Manager) ---
     public function editResource($id) {
         $resource = Resource::findOrFail($id);
-        if ($resource->manager_id !== Auth::id()) { abort(403); }
+        if ($resource->manager_id !== Auth::id() && Auth::user()->role !== 'admin') { abort(403); }
         return view('manager.resources.edit', compact('resource'));
     }
 
     public function updateResource(Request $request, $id) {
         $resource = Resource::findOrFail($id);
-        if ($resource->manager_id !== Auth::id()) { abort(403); }
+        if ($resource->manager_id !== Auth::id() && Auth::user()->role !== 'admin') { abort(403); }
 
-        $request->validate([
-            'status' => 'required|in:available,maintenance,inactive,occupied',
-            'description' => 'nullable|string',
-        ]);
+        $request->validate([ 'status' => 'required', 'description' => 'nullable' ]);
+        $resource->update([ 'status' => $request->status, 'description' => $request->description ]);
 
-        $resource->update([
-            'status' => $request->status,
-            'description' => $request->description,
-        ]);
-
-        return redirect()->route('manager.dashboard')->with('success', 'Ressource mise à jour avec succès.');
+        $route = Auth::user()->role === 'admin' ? 'admin.dashboard' : 'manager.dashboard';
+        return redirect()->route($route)->with('success', 'Ressource mise à jour.');
     }
 }

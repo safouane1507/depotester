@@ -59,7 +59,7 @@
                 <textarea name="justification" rows="4" placeholder="Pourquoi avez-vous besoin de cette configuration ?" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-background); color: var(--text-primary);"></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-weight: 700; font-size: 1rem; border-radius: 8px;">
+            <button type="submit" style="background: var(--primary); color: white; width: 100%; padding: 14px; font-weight: 700; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer;">
                 Envoyer ma demande
             </button>
         </form>

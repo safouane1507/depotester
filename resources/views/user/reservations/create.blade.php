@@ -49,7 +49,7 @@
                 <textarea name="justification" rows="4" required placeholder="Ex: Besoin pour le projet de fin d'études..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
             </div>
 
-            <button type="submit" style="width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;">
+            <button type="submit" style="background: var(--primary); color: white; width: 100%; padding: 14px; font-weight: 700; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer;">
                 Confirmer la demande
             </button>
         </form>
