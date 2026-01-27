@@ -15,7 +15,7 @@
         </h1>
         <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">
             @if($resources->isEmpty())
-                Veuillez sélectionner une catégorie dans le menu <b>Ressources</b> ci-dessus pour explorer nos équipements disponibles.
+                Veuillez sélectionner une catégorie dans le menu <b>Ressources</b> ci-dessus.
             @else
                 Explorez nos équipements de type <b style="color: var(--primary);">{{ request('cat') }}</b>.
             @endif
@@ -37,8 +37,6 @@
                 display: flex; 
                 flex-direction: column; 
                 justify-content: space-between; 
-                transition: all 0.3s ease;
-                height: 100%;
                 min-height: 260px;
                 padding: 25px;
                 border: 1px solid var(--border);
@@ -74,11 +72,23 @@
                         <strong style="color: var(--text-primary);">{{ $resource->location }}</strong>
                     </div>
 
-                    <a href="{{ Auth::check() ? route('reservations.create', ['resource_id' => $resource->id]) : route('login') }}" 
-                       class="btn-action" 
-                       style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
-                       {{ Auth::check() ? 'Réserver' : 'Se connecter' }} <span>→</span>
-                    </a>
+                    @auth
+                        @if(Auth::user()->role === 'user')
+                            @if($resource->status == 'available')
+                                <a href="{{ route('reservations.create', ['resource_id' => $resource->id]) }}" 
+                                   class="btn-action" 
+                                   style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+                                   Réserver <span>→</span>
+                                </a>
+                            @else
+                                <span style="color: #d63031; font-size: 0.8rem; font-weight: 700;">Indisponible</span>
+                            @endif
+                        @else
+                            <span style="color: var(--text-muted); font-size: 0.75rem; font-style: italic;">Mode Gestion</span>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="btn-action" style="color: var(--primary); text-decoration: none; font-weight: 700;">Se connecter →</a>
+                    @endauth
                 </div>
             </div>
         @endforeach
@@ -87,11 +97,7 @@
 @endif
 
 <style>
-    .card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        border-color: var(--primary);
-    }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--primary); }
     .btn-action:hover { text-decoration: underline; color: var(--secondary); }
 </style>
 

@@ -13,17 +13,15 @@ class DashboardController extends Controller
 {
     // --- PARTIE PUBLIQUE AVEC FILTRAGE ---
     public function guestIndex(Request $request) {
-        // On initialise une collection vide par défaut
-        $resources = collect();
+    $resources = collect();
 
-        // Si l'utilisateur a cliqué sur une catégorie (ex: ?cat=VM)
-        if ($request->has('cat')) {
-            $resources = Resource::where('status', 'available')
-                ->where('category', $request->cat)
-                ->get();
-        }
-
-        return view('guest.index', compact('resources'));
+    if ($request->has('cat')) {
+        // On retire la contrainte stricte sur le manager_id pour que les packs Admin s'affichent aussi
+        $resources = Resource::where('status', 'available')
+            ->where('category', $request->cat)
+            ->get();
+    }
+    return view('guest.index', compact('resources'));
     }
 
     public function resourceDetail($id) {
@@ -72,17 +70,28 @@ class DashboardController extends Controller
     }
 
     // --- PARTIE ADMINISTRATEUR ---
-    public function adminDashboard() {
+   public function adminDashboard() {
         $stats = [
             'users_count' => User::count(),
             'resources_count' => Resource::count(),
             'pending_reservations' => Reservation::where('status', 'pending')->count(),
         ];
-        $pendingUsers = User::where('is_active', false)->get();
-        $allUsers = User::where('role', '!=', 'admin')->get();
-        $managers = User::where('role', 'manager')->orWhere('role', 'admin')->get();
 
-        return view('admin.dashboard', compact('stats', 'pendingUsers', 'allUsers', 'managers'));
+        // Utilisateurs en attente ou inactifs
+        $pendingUsers = User::where('is_active', false)->get();
+        // Tous les utilisateurs sauf admin
+        $allUsers = User::where('role', '!=', 'admin')->get();
+        // Liste des managers pour info
+        $managers = User::where('role', 'manager')->orWhere('role', 'admin')->get();
+        
+        // AJOUT : Récupérer les demandes sur mesure pour l'admin
+        $customRequests = DB::table('custom_requests')
+            ->join('users', 'custom_requests.user_id', '=', 'users.id')
+            ->select('custom_requests.*', 'users.name', 'users.email')
+            ->where('custom_requests.status', 'pending')
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'pendingUsers', 'allUsers', 'customRequests'));
     }
 
     // --- GESTION DES RESSOURCES ---

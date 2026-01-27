@@ -51,10 +51,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/custom-requests/{id}/reject', [App\Http\Controllers\ResourceManagerController::class, 'rejectCustom'])->name('manager.custom.reject');
     });
 
+    
     // Admin
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
-        Route::post('/users/{id}/activate', [AdminController::class, 'activateUser'])->name('admin.users.activate');
-        Route::post('/resources', [AdminController::class, 'storeResource'])->name('admin.resources.store');
+        
+        // CORRECTION : Route pour activer/désactiver un utilisateur
+        Route::post('/users/{id}/toggle-status', [App\Http\Controllers\AdminController::class, 'toggleUserStatus'])->name('admin.users.toggle');
+        
+        Route::post('/resources', [App\Http\Controllers\AdminController::class, 'storeResource'])->name('admin.resources.store');
     });
 });
