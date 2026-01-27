@@ -12,7 +12,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <h1>Mon Espace Utilisateur</h1>
         <div style="display: flex; gap: 10px;">
-            <a href="{{ route('reservations.create') }}" class="btn btn-outline" style="text-decoration: none; padding: 10px 20px;">
+            <a href="{{ route('reservations.create') }}" class="btn" style="text-decoration: none; padding: 10px 20px; background-color: #00796b; color: white;">
                 + Nouvelle Réservation
             </a>
             <a href="{{ route('user.custom.create') }}" class="btn btn-primary" style="text-decoration: none; padding: 10px 20px;">

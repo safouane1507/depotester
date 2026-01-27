@@ -17,11 +17,17 @@ class ReservationController extends Controller
     /**
      * Affiche le formulaire de réservation standard
      */
-    public function create()
+    public function create(Request $request)
     {
+        // On récupère l'ID s'il est passé dans l'URL
+        $selectedResource = null;
+        if ($request->has('resource_id')) {
+            $selectedResource = Resource::find($request->resource_id);
+        }
+
         // Propose uniquement les ressources marquées comme 'available'
         $resources = Resource::where('status', 'available')->get();
-        return view('user.reservations.create', compact('resources'));
+        return view('user.reservations.create', compact('resources', 'selectedResource'));
     }
 
     /**
