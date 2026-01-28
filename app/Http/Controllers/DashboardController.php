@@ -136,10 +136,21 @@ class DashboardController extends Controller
 
     public function updateResource(Request $request, $id) {
         $resource = Resource::findOrFail($id);
-        if ($resource->manager_id !== Auth::id() && Auth::user()->role !== 'admin') { abort(403); }
 
-        $request->validate([ 'status' => 'required', 'description' => 'nullable' ]);
-        $resource->update([ 'status' => $request->status, 'description' => $request->description ]);
+        // Vérification : Seul le manager assigné ou un Admin peut modifier
+        if ($resource->manager_id != Auth::id() && Auth::user()->role !== 'admin') { 
+            abort(403, "Vous n'avez pas le droit de gérer cette ressource."); 
+        }
+
+        $request->validate([ 
+            'status' => 'required', 
+            'description' => 'nullable' 
+        ]);
+
+        $resource->update([ 
+            'status' => $request->status, 
+            'description' => $request->description 
+        ]);
 
         $route = Auth::user()->role === 'admin' ? 'admin.dashboard' : 'manager.dashboard';
         return redirect()->route($route)->with('success', 'Ressource mise à jour.');

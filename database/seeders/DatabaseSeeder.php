@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. Création d'un Responsable Technique
         $manager = User::create([
-            'name' => 'Jean Responsable',
+            'name' => 'Manager Principal',
             'email' => 'manager@datacenter.com',
             'password' => Hash::make('password'),
             'role' => 'manager',
@@ -31,11 +31,11 @@ class DatabaseSeeder extends Seeder
 
         // 3. Création d'un Utilisateur Standard (NOUVEAU)
         User::create([
-            'name' => 'Alice Utilisatrice',
+            'name' => 'Mohamed Reda',
             'email' => 'user@datacenter.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678'),
             'role' => 'user',
-            'is_active' => true, // Compte déjà validé pour tester tout de suite
+            'is_active' => true, // pour tester le premier user
         ]);
 
         // 4. Création de Ressources de test

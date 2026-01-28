@@ -56,7 +56,7 @@ class AdminController extends Controller
             'location' => $request->location,
             'description' => $request->description,
             'status' => 'available',
-            'manager_id' => $request->manager_id, // L'admin devient le gestionnaire par défaut
+            'manager_id' => $request->manager_id,
         ]);
 
         //return redirect()->route('admin.dashboard')->with('success', 'Ressource ajoutée au catalogue.');
