@@ -6,6 +6,11 @@
 > 📍 Projet académique – **FST de Tanger**  
 > 🎓 Filière : **IDAI – 2025/2026**  
 > 🎯 Axes principaux : Sécurité, traçabilité et interface moderne **sans framework CSS externe**
+---
+# 🎥DEMO
+
+
+https://github.com/user-attachments/assets/277b569e-59aa-4e78-b76e-1340aef7c5c3
 
 ---
 
@@ -90,7 +95,7 @@ DataCenter_Manager/
 ├── routes/
 │   └── web.php                  # Définition des routes
 └── storage/
-´´´
+```
 
 ---
 
@@ -99,44 +104,53 @@ DataCenter_Manager/
 ### 1️⃣ Cloner le projet
 ```bash
 git clone https://github.com/safouane1507/DataCenter_Manager.git
+```
 
-
-2️⃣ Installer les dépendances
+### 2️⃣ Installer les dépendances
+```bash
 composer install
 npm install
+```
 
-3️⃣ Configurer l'environnement
+### 3️⃣ Configurer l'environnement
+```bash
 cp .env.example .env
-Configurer les accès MySQL dans le fichier .env
+```
+>Configurer les accès MySQL dans le fichier .env
 
-4️⃣ Lancer les migrations & seeders
+### 4️⃣ Lancer les migrations & seeders
+```bash
 php artisan migrate --seed
+```
 
-5️⃣ Démarrer le serveur
+### 5️⃣ Démarrer le serveur
+```bash
 php artisan serve
+```
+---
+# 📊 Statistiques & Sécurité
+* **Journalisation complète des actions utilisateurs**
 
+> **Tableau de bord Administrateur :**
 
-📊 Statistiques & Sécurité
-Journalisation complète des actions utilisateurs
+> Taux d’occupation global du Data Center
 
-Tableau de bord Administrateur :
+> Suivi des ressources critiques
 
-Taux d’occupation global du Data Center
+> Accès strictement filtré :
 
-Suivi des ressources critiques
+> Les ressources sensibles restent sous la supervision des Managers désignés
 
-Accès strictement filtré :
+## 📌 Remarques
 
-Les ressources sensibles restent sous la supervision des Managers désignés
+-  Interface moderne sans Bootstrap ni Tailwind
 
-📌 Remarques
+- Architecture claire et maintenable
 
-Interface moderne sans Bootstrap ni Tailwind
+- Projet prêt pour une évolution vers un contexte professionnel réel
+  
+---
 
-Architecture claire et maintenable
+# 📜 Licence
 
-Projet prêt pour une évolution vers un contexte professionnel réel
-
-📜 Licence
-
-Projet académique – Usage pédagogique uniquement.
+**© Projet académique – Usage pédagogique uniquement.**
