@@ -18,6 +18,7 @@ Route::get('/resources', [DashboardController::class, 'guestIndex'])->name('reso
 // --- ACCÈS PUBLIC ---
 Route::get('/catalogue', [DashboardController::class, 'guestIndex'])->name('guest.index');
 Route::get('/resources/{id}', [DashboardController::class, 'resourceDetail'])->name('resource.show');
+Route::post('/contact-support', [App\Http\Controllers\IncidentController::class, 'sendContactEmail'])->name('contact.send');
 
 // --- AUTHENTIFICATION ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -30,9 +31,6 @@ Route::post('/register-request', [AuthController::class, 'register']);
 
 // --- ESPACES SÉCURISÉS ---
 Route::middleware(['auth'])->group(function () {
-    
-    // Route Publique pour le Contact Email
-    Route::post('/contact-support', [App\Http\Controllers\IncidentController::class, 'sendContactEmail'])->name('contact.send');
     
     // User
     Route::middleware(['role:user'])->prefix('user')->group(function () {
